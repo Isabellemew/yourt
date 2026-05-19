@@ -16,23 +16,25 @@ function FlyingComponents({ hovered }) {
     { name: "Arduino", img: "/arduino.png" }
   ];
 
-  const radius = 6; // Большой радиус разлета компонентов
+  // Сетка позиций по квадрату (3x3)
+  const gridPositions = [
+    [-5, 0, -5], [-5, 0, 0], [-5, 0, 5],    // Левая колонна
+    [0, 0, -5],  [0, 0, 0],  [0, 0, 5],     // Центральная колонна
+    [5, 0, -5],  [5, 0, 0],  [5, 0, 5]      // Правая колонна
+  ];
 
   return (
     <group>
       {items.map((item, index) => {
-        const angle = (index / items.length) * Math.PI * 2;
-        
-        // Позиции по кругу на большем расстоянии
-        const targetX = radius * Math.cos(angle);
-        const targetZ = radius * Math.sin(angle);
+        // Используем сетку или крайние точки
+        const targetPos = index < gridPositions.length ? gridPositions[index] : [-5, 0, -5];
         
         // Пружинная анимация для позиции
         const spring = useSpring({
-          position: hovered ? [targetX, 0, targetZ] : [0, 0, 0],
+          position: hovered ? targetPos : [0, 0, 0],
           scale: hovered ? 1 : 0,
           opacity: hovered ? 1 : 0,
-          config: { mass: 1, tension: 80, friction: 12, delay: index * 80 }
+          config: { mass: 1, tension: 80, friction: 12, delay: index * 50 }
         });
 
         return (
@@ -49,43 +51,43 @@ function FlyingComponents({ hovered }) {
                   pointerEvents: 'none'
                 }}
               >
-                {/* Рамка для картинок компонентов */}
+                {/* Рамка для картинок компонентов — более заметная и яркая */}
                 <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  backgroundColor: 'white', 
+                  width: '90px', 
+                  height: '90px', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)', 
                   borderRadius: '50%',
                   padding: '12px',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                  boxShadow: '0 12px 35px rgba(194, 155, 98, 0.35), 0 0 0 3px rgba(194, 155, 98, 0.2)',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  border: '3px solid #c29b62',
+                  border: '4px solid #c29b62',
                   transition: 'all 0.3s ease',
-                  transform: hovered ? 'scale(1.1)' : 'scale(1)'
+                  transform: hovered ? 'scale(1.15) drop-shadow(0 8px 20px rgba(0,0,0,0.2))' : 'scale(1)',
+                  backdropFilter: 'blur(4px)'
                 }}>
                   <img 
                     src={item.img} 
                     alt={item.name} 
-                    // Если картинки нет, браузер покажет сломанную иконку. 
-                    // Стилизуем её аккуратно
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                    style={{ width: '85%', height: '85%', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} 
                     onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 </div>
                 
-                {/* Текст всегда читаемый и не зеркальный */}
+                {/* Текст хорошо читаемый и видный */}
                 <span style={{ 
-                  marginTop: '10px', 
-                  fontSize: '13px', 
-                  color: '#4a453f', 
-                  fontWeight: 'bold', 
+                  marginTop: '12px', 
+                  fontSize: '12px', 
+                  color: '#2b2520', 
+                  fontWeight: '700', 
                   whiteSpace: 'nowrap', 
-                  textShadow: '0 2px 4px rgba(255,255,255,0.8), 0 -2px 4px rgba(255,255,255,0.8), 2px 0 4px rgba(255,255,255,0.8), -2px 0 4px rgba(255,255,255,0.8)',
-                  backgroundColor: 'rgba(250, 248, 245, 0.85)',
-                  padding: '4px 10px',
-                  borderRadius: '14px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  textShadow: '0 2px 6px rgba(255,255,255,0.9)',
+                  backgroundColor: 'rgba(250, 248, 245, 0.92)',
+                  padding: '6px 14px',
+                  borderRadius: '16px',
+                  boxShadow: '0 4px 12px rgba(194, 155, 98, 0.25), inset 0 1px 2px rgba(255,255,255,0.8)',
+                  border: '1px solid rgba(194, 155, 98, 0.3)'
                 }}>
                   {item.name}
                 </span>
