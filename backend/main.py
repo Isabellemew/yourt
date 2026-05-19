@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from mangum import Mangum  # For Vercel serverless
 
 app = FastAPI(title="Smart Yurt API")
 
@@ -48,6 +49,9 @@ def get_yurt_info():
 def submit_contact(msg: ContactMessage):
     # Here you could save to a database or Firebase Admin SDK
     return {"status": "success", "message": f"Спасибо, {msg.name}! Ваше сообщение получено."}
+
+# Vercel serverless handler
+handler = Mangum(app)
 
 if __name__ == "__main__":
     import uvicorn
